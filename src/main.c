@@ -1,14 +1,13 @@
 
-/*8-bit olarak 0 - 255 arasinda girdigimiz dijital veriyi 0 - 3.3v arasýnda gerilim olarak aliyoruz.
- * bu sayede led yavas yavas yanip sönmektedir*/
+/*8-bit olarak 0 - 255 arasinda girdigimiz dijital veriyi 0 - 3.3v arasinda gerilim olarak aliyoruz.
+ * bu sayede led yavas yavas yanip sÃ¶nmektedir*/
 
 #include "stm32f4xx.h"
 #include "stm32f4_discovery.h"
 
 int i = 0;
 
-void delay(uint32_t time)
-{
+void delay(uint32_t time) {
 	while(time--);
 }
 
@@ -17,21 +16,17 @@ DAC_InitTypeDef DAC_InitStruct;
 
 /*GPIO ve DAC KONFIGURASYONLARI*/
 
-void DAC2_Config()
-{
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC,ENABLE);
+void DAC2_Config() {
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC,ENABLE);		// clock hatti aktif edildi.
 
-	DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
-	DAC_InitStruct.DAC_Trigger = DAC_Trigger_None; 	// tetikleyici olarak calistirmiyoruz
-	DAC_InitStruct.DAC_WaveGeneration = DAC_WaveGeneration_None; //dalga uretmek istemiyoruz
+	DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Enable;	// Gurultu onleyiciyi aktif ettik.
+	DAC_InitStruct.DAC_Trigger = DAC_Trigger_None; 			// tetikleyici olarak calistirmiyoruz
+	DAC_InitStruct.DAC_WaveGeneration = DAC_WaveGeneration_None; 	// dalga uretmek istemiyoruz
 
-	DAC_Init(DAC_Channel_2 ,&DAC_InitStruct);
-
-	DAC_Cmd(DAC_Channel_2 ,ENABLE);		//cevresel birimlerle calistigimiz zaman cmd ile aktif etmeliyiz
+	DAC_Init(DAC_Channel_2 , &DAC_InitStruct);  // DAC2 Channel aktif edildi(A portunun 5 pini secilmis oldu.)
+	DAC_Cmd(DAC_Channel_2 , ENABLE);	    //cevresel birimlerle calistigimiz zaman cmd ile aktif etmeliyiz
 }
-
-GPIO_Config()
-{
+GPIO_Config() {
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA,ENABLE);
 
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_OUT;
@@ -42,25 +37,20 @@ GPIO_Config()
 
 	GPIO_Init(GPIOA,&GPIO_InitStruct);
 }
-
-int main(void)
-{
-
+int main(void) {
 	DAC2_Config();
 	GPIO_Config();
 
-  while (1)
-  {
-	  for(; i<255; i++) //DAC_Align_8b_R 8 bit sectigimiz icin 255 yazdýk.12 bit secseydik 4095 yazacaktik
+  while (1) {
+	  for(; i<255; i++) // DAC_Align_8b_R 8 bit sectigimiz icin 255 yazdik.12 bit secseydik 4095 yazacaktik
 	  {
-		  DAC_SetChannel2Data(DAC_Align_8b_R,i);
+		  DAC_SetChannel2Data(DAC_Align_8b_R,i); // bu uygulamada sadece channel2 yi kullandigimiz icin channel2 set edildi.
+		  					 // 8bit sectigimiz icin  2^n -1 = 255 , 0 - 255 arsÄ±nda islem yapacak. 
 		  delay(100000);
 	  }
 	  i=0;
   }
 }
-
-
 
 void EVAL_AUDIO_TransferComplete_CallBack(uint32_t pBuffer, uint32_t Size){
   /* TODO, implement your code here */
